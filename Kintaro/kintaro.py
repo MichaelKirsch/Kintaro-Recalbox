@@ -48,14 +48,14 @@ class SNES:
                 self.check_pin) == GPIO.LOW:  # shutdown function if the powerswitch is toggled
             self.led(0)  # led and fan off
             self.fan(0)
-            os.system("sudo shutdown -h now")
+            os.system("shutdown -h now")
 
     def reset_interrupt(self, channel):
         if GPIO.input(self.reset_pin) == GPIO.LOW:  # reset function
             time.sleep(self.debounce_time)  # debounce time
             while GPIO.input(self.reset_pin) == GPIO.LOW:  # while the button is hold the counter counts up
                 self.blink(15, 0.1)
-                os.system("sudo reboot")
+                os.system("reboot")
 
     def pcb_interrupt(self, channel):
         GPIO.cleanup()  # when the pcb is pulled clean all the used GPIO pins
@@ -96,7 +96,7 @@ class SNES:
         if GPIO.input(self.check_pin) == GPIO.LOW:  # check if there is an pcb and if so attach the interrupts
             GPIO.add_event_detect(self.check_pin, GPIO.RISING,callback=self.pcb_interrupt)  # if not the interrupt gets attached
             if GPIO.input(self.power_pin) == GPIO.HIGH: #when the system gets startet in the on position it gets shutdown
-                os.system("sudo shutdown -h now")
+                os.system("shutdown -h now")
             else:
                 self.led(1)
                 GPIO.add_event_detect(self.reset_pin, GPIO.FALLING, callback=self.reset_interrupt)

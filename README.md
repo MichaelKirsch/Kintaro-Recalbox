@@ -1,8 +1,8 @@
 # Kintaro-Recalbox
 
-###Version 1.5
+#Version 1.5
 
-####Author: Michael Kirsch
+##Author: Michael Kirsch
 
 This is the official Kintaro script for Recalbox.
 

@@ -49,7 +49,6 @@ class SNES:
         if GPIO.input(self.power_pin) == GPIO.HIGH and GPIO.input(
                 self.check_pin) == GPIO.LOW:  # shutdown function if the powerswitch is toggled
             self.led(0)  # led and fan off
-            self.fan(0)
             os.system("shutdown -h now")
 
     def reset_interrupt(self, channel):

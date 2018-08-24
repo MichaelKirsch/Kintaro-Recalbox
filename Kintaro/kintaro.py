@@ -23,7 +23,7 @@ class SNES:
 
         #vars
 
-        self.fan_hysteresis = 5
+        self.fan_hysteresis = 20
         self.fan_starttemp = 60
         self.debounce_time = 0.1
 
@@ -41,6 +41,8 @@ class SNES:
         GPIO.setup(self.reset_pin, GPIO.IN,
                    pull_up_down=GPIO.PUD_UP)  # set pin as input and switch on internal pull up resistor
         GPIO.setup(self.check_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        self.pwm = GPIO.PWM(self.fan_pin, 50)
+
 
     def power_interrupt(self, channel):
         time.sleep(self.debounce_time)  # debounce
@@ -64,6 +66,11 @@ class SNES:
         res = os.popen(self.temp_command).readline()
         return float((res.replace("temp=", "").replace("'C\n", "")))
 
+    def pwm_fancontrol(self,hysteresis, starttemp, temp):
+        perc = 100.0 * ((temp - (starttemp - hysteresis)) / (starttemp - (starttemp - hysteresis)))
+        perc=min(max(perc, 0.0), 100.0)
+        self.pwm.ChangeDutyCycle(float(perc))
+
     def led(self,status):  #toggle the led on of off
         if status == 0:       #the led is inverted
             GPIO.output(self.led_pin, GPIO.LOW)
@@ -77,20 +84,8 @@ class SNES:
             self.led(0)
             time.sleep(interval)
 
-    def fan(self,status):  #switch the fan on or off
-        if status == 1:
-            GPIO.output(self.fan_pin, GPIO.HIGH)
-        if status == 0:
-            GPIO.output(self.fan_pin, GPIO.LOW)
-
-    def fancontrol(self,hysteresis,starttemp):  #read the temp and have a buildin hysteresis
-        if self.temp() > starttemp:
-            self.fan(1)
-        if self.temp() < starttemp-hysteresis:
-            self.fan(0)
-
     def check_fan(self):
-        self.fancontrol(self.fan_hysteresis,self.fan_starttemp)  # fan starts at 60 degrees and has a 5 degree hysteresis
+        self.pwm_fancontrol(self.fan_hysteresis,self.fan_starttemp,self.temp())  # fan starts at 60 degrees and has a 5 degree hysteresis
 
     def attach_interrupts(self):
         if GPIO.input(self.check_pin) == GPIO.LOW:  # check if there is an pcb and if so attach the interrupts

@@ -2,12 +2,12 @@
  
 case "$1" in
   start)
-    echo "Starting example"
+    echo "Starting SNES"
     # run application you want to start
     python /opt/Kintaro/kintaro.py &
     ;;
   stop)
-    echo "Stopping example"
+    echo "Stopping SNES"
     # kill application you want to stop
     killall python
     ;;

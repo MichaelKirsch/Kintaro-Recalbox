@@ -42,6 +42,7 @@ class SNES:
                    pull_up_down=GPIO.PUD_UP)  # set pin as input and switch on internal pull up resistor
         GPIO.setup(self.check_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         self.pwm = GPIO.PWM(self.fan_pin, 50)  #PWM for the fan
+        self.pwm.start(0)
 
 
     def power_interrupt(self, channel):
